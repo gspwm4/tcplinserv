@@ -6,12 +6,11 @@
 #include <stdio.h>
 int main()
 {
-    while(1){
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if(sockfd == -1){
         close(sockfd);
         perror("socket failed");
-        break;
+        return -1;
     }
     else{
         printf("socket created...\n");
@@ -21,7 +20,7 @@ int main()
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(8080);
+    addr.sin_port = htons(8888);
     addr.sin_addr.s_addr = inet_addr("127.0.0.1");
     int bind_stat = bind(sockfd, (struct sockaddr *) &addr, sizeof(addr));
     char ip_addr[INET_ADDRSTRLEN];
@@ -29,14 +28,14 @@ int main()
 
     if(bind_stat == -1){
         perror("bind failed");
-        break;
+        return -1;
     }
     else{
         printf("bind addr %s on port %d successful...\n", ip_addr, ntohs(addr.sin_port));
     }
     if(listen(sockfd, 5) == -1){
         perror("listen failed");
-        break;
+        return -1;
     }
     else{
         printf("listen successful...\n");
@@ -44,12 +43,28 @@ int main()
     struct sockaddr_in peer_addr;
     socklen_t peer_addr_size = sizeof(peer_addr);
     int acceptfd = accept(sockfd, (struct sockaddr *) &peer_addr, &peer_addr_size);
-
     if(acceptfd == -1){
         close(acceptfd);
         perror("accept failed");
-        break;
+        return -1;
     }
-    }  
+    ssize_t read_eof;
+    char buff[128];
+    read_eof = read(acceptfd, buff, 128);
+    if(read_eof == -1){
+        close(acceptfd);
+        close(sockfd);
+        fprintf(stderr, "read failed\n");
+        return -1;
+    }
+    if(read_eof == 0){
+        fprintf(stdout, "EOF success\n");
+    }
+    write(STDOUT_FILENO, buff, read_eof);
+    write(acceptfd, buff, read_eof);
+
+    close(acceptfd);
+    close(sockfd);
+
     return 0;
 }
