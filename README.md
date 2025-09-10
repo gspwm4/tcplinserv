@@ -3,7 +3,7 @@ chmod +x srv
 ./srv
 ./server
 ```
-in new terminal
+in the new terminal
 ```
 chmod +x cli
 ./cli
