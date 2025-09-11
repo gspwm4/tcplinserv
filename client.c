@@ -8,25 +8,29 @@
 
 int main(){
     int sock_cl = socket(AF_INET, SOCK_STREAM, 0);
+    if(sock_cl == -1){
+        perror("socket failed");
+        return -1;
+    }
     struct sockaddr_in addr = {0};
     addr.sin_family = AF_INET;
     addr.sin_port = htons(8888);
     addr.sin_addr.s_addr = inet_addr("127.0.0.1");
     int inet_convert = inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
     if(inet_convert == -1){
-        fprintf(stderr, "inet error\n");
+        perror("inet pton failed");
         return -1;
     }
     int conn_socket = connect(sock_cl, (struct sockaddr *) &addr, sizeof(addr));
     if(conn_socket == -1){
-        fprintf(stderr, "connect error");
+        perror("connect failed");
         return -1;
     }
     write(sock_cl, "Hello\n", 6);
     char buff[128];
     ssize_t read_buff = read(sock_cl, buff, 128);
     if(read_buff == -1){
-        fprintf(stderr, "read failed\n");
+        perror("read failed");
         return -1;
     }
     if(read_buff == 0){
