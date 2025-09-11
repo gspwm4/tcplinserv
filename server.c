@@ -24,7 +24,11 @@ int main()
     addr.sin_addr.s_addr = inet_addr("127.0.0.1");
     int bind_stat = bind(sockfd, (struct sockaddr *) &addr, sizeof(addr));
     char ip_addr[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &(addr.sin_addr), ip_addr, INET_ADDRSTRLEN);
+    if((inet_ntop(AF_INET, &(addr.sin_addr), ip_addr, INET_ADDRSTRLEN) == NULL)){
+        perror("inet ntop failed");
+        close(sockfd);
+        return -1;
+    }
 
     if(bind_stat == -1){
         perror("bind failed");
@@ -62,6 +66,7 @@ int main()
     }
     write(STDOUT_FILENO, buff, read_eof);
     write(acceptfd, buff, read_eof);
+    fprintf(stdout, "read: %zu\n", read_eof);
 
     close(acceptfd);
     close(sockfd);
