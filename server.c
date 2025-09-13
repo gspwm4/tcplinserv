@@ -37,9 +37,10 @@ int main()
     else{
         printf("bind addr %s on port %d successful...\n", ip_addr, ntohs(addr.sin_port));
     }
+    while(1){
     if(listen(sockfd, 5) == -1){
         perror("listen failed");
-        return -1;
+        continue;
     }
     else{
         printf("listen successful...\n");
@@ -50,7 +51,7 @@ int main()
     if(acceptfd == -1){
         close(acceptfd);
         perror("accept failed");
-        return -1;
+        continue;
     }
     ssize_t read_eof;
     char buff[128];
@@ -59,7 +60,7 @@ int main()
         close(acceptfd);
         close(sockfd);
         fprintf(stderr, "read failed\n");
-        return -1;
+        continue;
     }
     if(read_eof == 0){
         fprintf(stdout, "EOF success\n");
@@ -69,6 +70,7 @@ int main()
     fprintf(stdout, "read: %zu\n", read_eof);
 
     close(acceptfd);
+    }
     close(sockfd);
 
     return 0;
