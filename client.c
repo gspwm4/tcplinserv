@@ -33,10 +33,6 @@ int main(){
         perror("read failed");
         return -1;
     }
-    if(read_buff == 0){
-        fprintf(stdout, "read success\n");
-    }
-    write(STDOUT_FILENO, buff, read_buff);
     close(sock_cl);
     return 0;
 }

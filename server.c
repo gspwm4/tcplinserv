@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 int main()
 {
@@ -53,6 +54,18 @@ int main()
         perror("accept failed");
         continue;
     }
+
+    char *c = NULL;
+    size_t n = 0; 
+    ssize_t get_c = getline(&c, &n, stdin);
+    if(get_c == -1){
+        perror("getline failed");
+        return -1;
+    }
+    if(c != NULL && strcmp(c, "1") == 0){
+        break;
+    }
+
     ssize_t read_eof;
     char buff[128];
     read_eof = read(acceptfd, buff, 128);
@@ -62,16 +75,11 @@ int main()
         fprintf(stderr, "read failed\n");
         continue;
     }
-    if(read_eof == 0){
-        fprintf(stdout, "EOF success\n");
-    }
     write(STDOUT_FILENO, buff, read_eof);
     write(acceptfd, buff, read_eof);
     fprintf(stdout, "read: %zu\n", read_eof);
-
     close(acceptfd);
     }
     close(sockfd);
-
     return 0;
 }
