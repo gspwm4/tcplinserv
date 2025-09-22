@@ -38,10 +38,9 @@ int main()
     else{
         printf("bind addr %s on port %d successful...\n", ip_addr, ntohs(addr.sin_port));
     }
-    while(1){
     if(listen(sockfd, 5) == -1){
         perror("listen failed");
-        continue;
+        return 1;
     }
     else{
         printf("listen successful...\n");
@@ -52,34 +51,21 @@ int main()
     if(acceptfd == -1){
         close(acceptfd);
         perror("accept failed");
-        continue;
+        return 1;
     }
-
-    char *c = NULL;
-    size_t n = 0; 
-    ssize_t get_c = getline(&c, &n, stdin);
-    if(get_c == -1){
-        perror("getline failed");
-        return -1;
-    }
-    if(c != NULL && strcmp(c, "1") == 0){
-        break;
-    }
-
     ssize_t read_eof;
-    char buff[128];
-    read_eof = read(acceptfd, buff, 128);
+    char buff[256] = {0};
+    read_eof = read(acceptfd, buff, 256);
     if(read_eof == -1){
         close(acceptfd);
         close(sockfd);
         fprintf(stderr, "read failed\n");
-        continue;
+        return 1;
     }
     write(STDOUT_FILENO, buff, read_eof);
     write(acceptfd, buff, read_eof);
     fprintf(stdout, "read: %zu\n", read_eof);
-    close(acceptfd);
-    }
+    close(acceptfd); 
     close(sockfd);
     return 0;
 }
