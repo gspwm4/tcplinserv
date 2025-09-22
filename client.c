@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 int main(){
@@ -16,8 +17,8 @@ int main(){
     addr.sin_family = AF_INET;
     addr.sin_port = htons(8888);
     addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    int inet_convert = inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
-    if(inet_convert == -1){
+    if((inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr)) == -1)
+    {
         perror("inet pton failed");
         return -1;
     }
@@ -26,9 +27,16 @@ int main(){
         perror("connect failed");
         return -1;
     }
-    write(sock_cl, "Hello\n", 6);
-    char buff[128];
-    ssize_t read_buff = read(sock_cl, buff, 128);
+    char s[256] = {0};
+    char *inp = fgets(s, sizeof(s), stdin);
+    if(inp == NULL)
+    {
+        perror("fgets failed");
+        return -1;
+    }
+    write(sock_cl, s, sizeof(s));
+    char buff[256];
+    ssize_t read_buff = read(sock_cl, buff, 256);
     if(read_buff == -1){
         perror("read failed");
         return -1;
