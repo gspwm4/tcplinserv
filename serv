@@ -1,0 +1,1 @@
+gcc server.c -o server -Wall -Wextra -D_GNU_SOURCE -std=c99
