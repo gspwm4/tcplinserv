@@ -35,8 +35,7 @@ int main(){
         return -1;
     }
     write(sock_cl, s, sizeof(s));
-    char buff[256];
-    ssize_t read_buff = read(sock_cl, buff, 256);
+    ssize_t read_buff = read(sock_cl, s, 256);
     if(read_buff == -1){
         perror("read failed");
         return -1;
