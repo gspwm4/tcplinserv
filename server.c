@@ -17,12 +17,10 @@ int main()
         printf("socket created...\n");
     }
     int opt = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     if((setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) == -1){
         perror("setsockopt failed");
         return -1;
     }
-
     struct sockaddr_in addr = {0};
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
@@ -60,8 +58,9 @@ int main()
         perror("accept failed");
         return 1;
     }
+    while(1){
     ssize_t read_eof;
-    char buff[128] = {0};
+    char buff[128] = {0}; 
     read_eof = read(acceptfd, buff, sizeof(buff));
     if(read_eof == -1){
         close(acceptfd);
@@ -71,7 +70,12 @@ int main()
     }
     write(STDOUT_FILENO, buff, read_eof);
     write(acceptfd, buff, read_eof);
-    close(acceptfd); 
+    const char *exit = "q";
+    if(strcmp(buff, exit) == 0){
+        break;
+    } 
+    }
     close(sockfd);
+    close(acceptfd);
     return 0;
 }

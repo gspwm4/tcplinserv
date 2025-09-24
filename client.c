@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 int main(){
     int sock_cl = socket(AF_INET, SOCK_STREAM, 0);
     if(sock_cl == -1){
@@ -27,6 +26,7 @@ int main(){
         perror("connect failed");
         return -1;
     }
+    while(1){
     char s[256] = {0};
     char *inp = fgets(s, sizeof(s), stdin);
     if(inp == NULL)
@@ -37,8 +37,10 @@ int main(){
     write(sock_cl, s, sizeof(s));
     ssize_t read_buff = read(sock_cl, s, 256);
     if(read_buff == -1){
+        close(sock_cl);
         perror("read failed");
         return -1;
+    }
     }
     close(sock_cl);
     return 0;
