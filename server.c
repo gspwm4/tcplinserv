@@ -1,6 +1,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <errno.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
@@ -14,7 +15,7 @@ int main()
         return -1;
     }
     else{
-        printf("socket created...\n");
+        fprintf(stdout, "socket created...\n");
     }
     int opt = 1;
     if((setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) == -1){
@@ -41,14 +42,14 @@ int main()
         return -1;
     }
     else{
-        printf("bind addr %s on port %d successful...\n", dst, ntohs(addr.sin_port));
+        fprintf(stdout, "bind addr %s on port %d successful...\n", dst, ntohs(addr.sin_port));
     }
     if(listen(sockfd, 5) == -1){
         perror("listen failed");
-        return 1;
+        return -1;
     }
     else{
-        printf("listen successful...\n");
+        fprintf(stdout, "listen successful...\n");
     }
     struct sockaddr_in peer_addr;
     socklen_t peer_addr_size = sizeof(peer_addr);
@@ -56,25 +57,25 @@ int main()
     if(acceptfd == -1){
         close(acceptfd);
         perror("accept failed");
-        return 1;
+        return -1;
     }
     while(1){
     ssize_t read_eof;
     char buff[128] = {0}; 
     read_eof = read(acceptfd, buff, sizeof(buff));
+    if(errno == ECONNRESET){
+        fprintf(stderr, "Client exited with Ctrl+C\n");
+        break;
+    }
     if(read_eof == -1){
         close(acceptfd);
         close(sockfd);
         perror("read failed");
-        return 1;
+        return -1;
     }
     write(STDOUT_FILENO, buff, read_eof);
     write(acceptfd, buff, read_eof);
-    const char *exit = "q";
-    if(strcmp(buff, exit) == 0){
-        break;
     } 
-    }
     close(sockfd);
     close(acceptfd);
     return 0;
