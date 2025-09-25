@@ -14,9 +14,6 @@ int main()
         perror("socket failed");
         return -1;
     }
-    else{
-        fprintf(stdout, "socket created...\n");
-    }
     int opt = 1;
     if((setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) == -1){
         perror("setsockopt failed");
@@ -41,15 +38,9 @@ int main()
         perror("bind failed");
         return -1;
     }
-    else{
-        fprintf(stdout, "bind addr %s on port %d successful...\n", dst, ntohs(addr.sin_port));
-    }
     if(listen(sockfd, 5) == -1){
         perror("listen failed");
         return -1;
-    }
-    else{
-        fprintf(stdout, "listen successful...\n");
     }
     struct sockaddr_in peer_addr;
     socklen_t peer_addr_size = sizeof(peer_addr);
@@ -64,7 +55,7 @@ int main()
     char buff[128] = {0}; 
     read_eof = read(acceptfd, buff, sizeof(buff));
     if(errno == ECONNRESET){
-        fprintf(stderr, "Client exited with Ctrl+C\n");
+        fprintf(stderr, "Abort\n");
         break;
     }
     if(read_eof == -1){
