@@ -7,22 +7,21 @@
 #include <string.h>
 #include <unistd.h>
 int main(){
-    int sock_cl = socket(AF_INET, SOCK_STREAM, 0);
-    if(sock_cl == -1){
+    int sockcl = socket(AF_INET,SOCK_STREAM,0);
+    if(sockcl == -1){
         perror("socket failed");
         return -1;
     }
     struct sockaddr_in addr = {0};
+    memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(8888);
-    addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    if((inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr)) == -1)
+    if((inet_pton(AF_INET,"127.0.0.1",&addr.sin_addr)) == -1)
     {
         perror("inet pton failed");
         return -1;
     }
-    int conn_socket = connect(sock_cl, (struct sockaddr *) &addr, sizeof(addr));
-    if(conn_socket == -1){
+    if(connect(sockcl,(struct sockaddr *) &addr,sizeof(addr)) == -1){
         perror("connect failed");
         return -1;
     }
@@ -30,27 +29,29 @@ int main(){
     char send_buff[256] = {0};
     char recv_buff[256] = {0};
 
-    if(fgets(send_buff, sizeof(send_buff), stdin) == NULL)
+    if(fgets(send_buff,sizeof(send_buff),stdin) == NULL)
     {
         perror("fgets failed");
         return -1;
     }
-    if(strncmp(send_buff, "exit", 4) == 0){
-        printf("exit\n");
+    if(strncmp(send_buff,"exit",4) == 0){
+        puts("exit");
         break;
     }
-    ssize_t write_buff = write(sock_cl, send_buff, strlen(send_buff));
-    if(write_buff == -1){
-        perror("write failed");
+
+    ssize_t send_mess = send(sockcl,send_buff,strlen(send_buff),MSG_CONFIRM);
+    if(send_mess == -1){
+        perror("send failed");
         return -1;
     }
-    ssize_t read_buff = read(sock_cl, recv_buff, sizeof(recv_buff)-1);
-    if(read_buff == -1){
-        perror("read failed");
+
+    ssize_t recv_mess = recv(sockcl,recv_buff,sizeof(recv_buff),MSG_PEEK);
+    if(recv_mess == -1){
+        perror("recv failed");
         return -1;
     }
-    recv_buff[read_buff] = '\0';
+    recv_buff[recv_mess] = '\0';
     }
-    close(sock_cl);
+    close(sockcl);
     return 0;
 }
