@@ -3,7 +3,7 @@ chmod +x srv
 ./srv
 ./server
 ```
-If you start the server and a blank line appears in the terminal, this means the server has started successfully.
+If you compil and run the server and a blank line appears in the terminal, this means the server has started successfully.
 
 Then, in the new terminal
 ```
