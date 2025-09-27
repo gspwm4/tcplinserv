@@ -10,7 +10,6 @@ int main()
 {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if(sockfd == -1){
-        close(sockfd);
         perror("socket failed");
         return -1;
     }
@@ -51,22 +50,18 @@ int main()
         return -1;
     }
     while(1){
-    ssize_t read_eof;
-    char buff[128] = {0}; 
-    read_eof = read(acceptfd, buff, sizeof(buff));
-    if(errno == ECONNRESET){
-        fprintf(stderr, "Abort\n");
-        break;
-    }
-    if(read_eof == -1){
+    ssize_t read_buff;
+    char buff[8129] = {0}; 
+    read_buff = read(acceptfd, buff, sizeof(buff));
+    if(read_buff == -1){
         close(acceptfd);
         close(sockfd);
         perror("read failed");
         return -1;
     }
-    write(STDOUT_FILENO, buff, read_eof);
-    write(acceptfd, buff, read_eof);
-    } 
+    write(STDOUT_FILENO, buff, read_buff);
+    write(acceptfd, buff, read_buff);
+    }
     close(sockfd);
     close(acceptfd);
     return 0;

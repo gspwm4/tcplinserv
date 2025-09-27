@@ -27,20 +27,29 @@ int main(){
         return -1;
     }
     while(1){
-    char s[256] = {0};
-    char *inp = fgets(s, sizeof(s), stdin);
-    if(inp == NULL)
+    char send_buff[256] = {0};
+    char recv_buff[256] = {0};
+
+    if(fgets(send_buff, sizeof(send_buff), stdin) == NULL)
     {
         perror("fgets failed");
         return -1;
     }
-    write(sock_cl, s, sizeof(s));
-    ssize_t read_buff = read(sock_cl, s, 256);
+    if(strncmp(send_buff, "exit", 4) == 0){
+        printf("exit\n");
+        break;
+    }
+    ssize_t write_buff = write(sock_cl, send_buff, strlen(send_buff));
+    if(write_buff == -1){
+        perror("write failed");
+        return -1;
+    }
+    ssize_t read_buff = read(sock_cl, recv_buff, sizeof(recv_buff)-1);
     if(read_buff == -1){
-        close(sock_cl);
         perror("read failed");
         return -1;
     }
+    recv_buff[read_buff] = '\0';
     }
     close(sock_cl);
     return 0;
