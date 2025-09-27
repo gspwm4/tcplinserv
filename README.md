@@ -3,10 +3,17 @@ chmod +x srv
 ./srv
 ./server
 ```
-in the new terminal
+If you start the server and a blank line appears in the terminal, this means the server has started successfully.
+
+Then, in the new terminal
 ```
 chmod +x cli
 ./cli
 ./client
 ```
-The server can't be closed at this time. If you type the number 1 where you started the server to close it, since it can listen indefinitely, the command won't work, so keep that in mind.
+You'll see a blank line in the terminal after you compile and run the client. Now you can send any text to the server.
+
+To exit the program on the client side
+```
+exit
+```
