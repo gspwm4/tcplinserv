@@ -22,9 +22,10 @@ int main()
     memset(&addr,0,sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(8888);
+    addr.sin_addr.s_addr = INADDR_ANY;
 
     char dst[INET_ADDRSTRLEN];
-    if((inet_ntop(AF_INET,"127.0.0.1",dst,INET_ADDRSTRLEN) == NULL)){
+    if((inet_ntop(AF_INET,&addr.sin_addr.s_addr,dst,INET_ADDRSTRLEN) == NULL)){
         perror("inet ntop failed");
         close(sockfd);
         return -1;
@@ -47,16 +48,9 @@ int main()
     while(1){
     char buff[1024] = {0}; 
     ssize_t read_buff = read(acceptfd,buff,sizeof(buff));
-    if(read_buff == -1){
-        if(errno == ECONNRESET){
-            puts("connection reset by client");
-            break;
-        }
-        else{
-            close(sockfd);
+    if(read_buff <= 0){
             perror("read failed");
-            return -1;
-        }
+            break;
     }
     write(STDOUT_FILENO,buff,read_buff);
     write(acceptfd,buff,read_buff);

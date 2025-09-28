@@ -29,26 +29,38 @@ int main(){
     char send_buff[256] = {0};
     char recv_buff[256] = {0};
 
+    printf("> ");
+    fflush(stdout);
+
     if(fgets(send_buff,sizeof(send_buff),stdin) == NULL)
     {
-        perror("fgets failed");
-        return -1;
+        if(feof(stdin)){
+            printf("EOF was reached by pressing Ctrl + d\n");
+            break;
+        }
+        else{
+            perror("fgets failed");
+            break;
+        }
     }
     if(strncmp(send_buff,"exit",4) == 0){
         puts("exit");
         break;
     }
-
-    ssize_t send_mess = send(sockcl,send_buff,strlen(send_buff),MSG_CONFIRM);
-    if(send_mess == -1){
-        perror("send failed");
-        return -1;
+    if(strlen(send_buff) == 0){
+        continue;
     }
 
-    ssize_t recv_mess = recv(sockcl,recv_buff,sizeof(recv_buff),MSG_PEEK);
+    ssize_t send_mess = send(sockcl,send_buff,strlen(send_buff), 0);
+    if(send_mess == -1){
+        perror("send failed");
+        break;
+    }
+
+    ssize_t recv_mess = recv(sockcl,recv_buff,sizeof(recv_buff)-1,0);
     if(recv_mess == -1){
         perror("recv failed");
-        return -1;
+        break;
     }
     recv_buff[recv_mess] = '\0';
     }
