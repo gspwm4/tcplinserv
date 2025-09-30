@@ -26,11 +26,12 @@ int main()
 
     char dst[INET_ADDRSTRLEN];
     if((inet_ntop(AF_INET,&addr.sin_addr.s_addr,dst,INET_ADDRSTRLEN) == NULL)){
-        perror("inet ntop failed");
         close(sockfd);
+        perror("inet ntop failed");
         return -1;
     }
     if(bind(sockfd,(struct sockaddr *) &addr,sizeof(addr)) == -1){
+        close(sockfd);
         perror("bind failed");
         return -1;
     }
@@ -38,22 +39,36 @@ int main()
         perror("listen failed");
         return -1;
     }
-
-    socklen_t addr_size = sizeof(addr);
-    int acceptfd = accept(sockfd,(struct sockaddr *) &addr,&addr_size);
+    struct sockaddr_in client_addr;
+    socklen_t addr_size = sizeof(client_addr);
+    int acceptfd = accept(sockfd,(struct sockaddr *) &client_addr,&addr_size);
     if(acceptfd == -1){
         perror("accept failed");
         return -1;
     }
     while(1){
-    char buff[1024] = {0}; 
+    char buff[10000] = {0}; 
     ssize_t read_buff = read(acceptfd,buff,sizeof(buff));
     if(read_buff <= 0){
-            perror("read failed");
-            break;
+        perror("read failed");
+        break;
     }
-    write(STDOUT_FILENO,buff,read_buff);
-    write(acceptfd,buff,read_buff);
+    printf("Receive from client: ");
+    fflush(stdout);
+    ssize_t rec_output = write(STDOUT_FILENO,buff,read_buff);
+    if(strncmp(buff, " ", 1) == 0){
+        fflush(stdout);
+        printf("nothing\n");
+    }
+    if(rec_output == -1){
+        perror("output write failed");
+        break;
+    }
+    ssize_t acceptfd_write = write(acceptfd,buff,read_buff);
+    if(acceptfd_write == -1){
+        perror("acceptfd write failed");
+        break;
+    }
     }
     close(sockfd);
     close(acceptfd);
