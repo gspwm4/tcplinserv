@@ -22,12 +22,13 @@ int main(){
         return -1;
     }
     if(connect(sockcl,(struct sockaddr *) &addr,sizeof(addr)) == -1){
+        close(sockcl);
         perror("connect failed");
         return -1;
     }
     while(1){
-    char send_buff[256] = {0};
-    char recv_buff[256] = {0};
+    char send_buff[255] = {0};
+    char recv_buff[255] = {0};
 
     printf("> ");
     fflush(stdout);
@@ -60,6 +61,10 @@ int main(){
     ssize_t recv_mess = recv(sockcl,recv_buff,sizeof(recv_buff)-1,0);
     if(recv_mess == -1){
         perror("recv failed");
+        break;
+    }
+    if(recv_mess == 0){
+        printf("server disconnected\n");
         break;
     }
     recv_buff[recv_mess] = '\0';
