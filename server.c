@@ -66,9 +66,6 @@ int main()
     fflush(stdout);
     ssize_t rec_output = write(STDOUT_FILENO,buff,read_buff);
     if(rec_output == -1){
-        if(errno == ECONNRESET){
-            break;
-        }
         perror("output write failed");
         return -1;
     }
@@ -77,6 +74,7 @@ int main()
         perror("acceptfd write failed");
         return -1;
     }
+    buff[read_buff] = '\0';
     }
     close(acceptfd);
     }

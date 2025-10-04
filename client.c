@@ -33,8 +33,7 @@ int main(){
     printf("> ");
     fflush(stdout);
 
-    if(fgets(send_buff,sizeof(send_buff),stdin) == NULL)
-    {
+    if(fgets(send_buff,sizeof(send_buff),stdin) == NULL){
         if(feof(stdin)){
             printf("EOF was reached by pressing Ctrl + d\n");
             break;
@@ -43,10 +42,6 @@ int main(){
             perror("fgets failed");
             break;
         }
-    }
-    if(strncmp(send_buff,"exit",4) == 0){
-        puts("exit");
-        break;
     }
     if(strlen(send_buff) == 0){
         continue;
