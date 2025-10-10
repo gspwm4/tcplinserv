@@ -44,7 +44,6 @@ int main()
     }
     while(1){
     struct sockaddr_in client_addr;
-    memset(&client_addr, 0, sizeof(client_addr));
     socklen_t addr_size = sizeof(client_addr);
     int acceptfd = accept(sockfd,(struct sockaddr *) &client_addr,&addr_size);
     if(acceptfd == -1){

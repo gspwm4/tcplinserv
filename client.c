@@ -52,7 +52,6 @@ int main(){
         perror("send failed");
         break;
     }
-
     ssize_t recv_mess = recv(sockcl,recv_buff,sizeof(recv_buff)-1,0);
     if(recv_mess == -1){
         perror("recv failed");
